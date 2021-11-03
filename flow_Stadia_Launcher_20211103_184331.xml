@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<data version="1.38.0">
+  <trigger type="periodic_timer">
+    <useDefaultName>false</useDefaultName>
+    <name>Every 5s</name>
+    <enabled>false</enabled>
+    <frequency>5000</frequency>
+    <wakeDevice>true</wakeDevice>
+    <fixedTimes>false</fixedTimes>
+    <limitTimeRange>false</limitTimeRange>
+    <weekday>Mon</weekday>
+    <weekday>Tue</weekday>
+    <weekday>Wed</weekday>
+    <weekday>Thu</weekday>
+    <weekday>Fri</weekday>
+    <weekday>Sat</weekday>
+    <weekday>Sun</weekday>
+    <hourFrom>8</hourFrom>
+    <minuteFrom>0</minuteFrom>
+    <hourTo>17</hourTo>
+    <minuteTo>0</minuteTo>
+    <allowInDeviceIdle>false</allowInDeviceIdle>
+    <likeAlarmClock>false</likeAlarmClock>
+  </trigger>
+  <condition type="app_task_running">
+    <useDefaultName>false</useDefaultName>
+    <name>On Homescreen</name>
+    <method>CLASSIC</method>
+    <packageNameList>com.google.android.apps.tv.launcherx</packageNameList>
+    <checkMostRecentAppTaskOnly>true</checkMostRecentAppTaskOnly>
+  </condition>
+  <condition type="host_reachable">
+    <useDefaultName>false</useDefaultName>
+    <name>Stadia Controller Connected</name>
+    <type>AUTOMATIC</type>
+    <host>192.168.178.3</host>
+    <socketPort>80</socketPort>
+  </condition>
+  <condition type="expression">
+    <useDefaultName>false</useDefaultName>
+    <name>Stadia Threshold passed</name>
+    <expression>getDate() - global_stadia_launched &gt; (60000 * 5)</expression>
+  </condition>
+  <action type="launch_app">
+    <useDefaultName>false</useDefaultName>
+    <name>Launch Stadia</name>
+    <packageName>com.google.stadia.androidtv</packageName>
+    <className></className>
+  </action>
+  <action type="script">
+    <useDefaultName>false</useDefaultName>
+    <name>Save Stadia Time</name>
+    <script>global_stadia_launched = getDate()</script>
+  </action>
+  <action type="control_user_interface">
+    <useDefaultName>false</useDefaultName>
+    <name>Select Account</name>
+    <script>
+tries = 0;
+while (!click("your.account@gmail.com") &amp;&amp; tries &lt; 30)
+{
+tries = tries + 1;
+sleep(1000);
+}</script>
+  </action>
+  <flow type="flow">
+    <name>Stadia Launcher</name>
+    <enabled>false</enabled>
+    <executionPolicy>SKIP</executionPolicy>
+    <conditioncontainer id="t1" x="69.99998" y="332.5">Stadia Controller Connected</conditioncontainer>
+    <triggercontainer id="t2" x="70.0" y="-87.500015">
+      <trigger>Every 5s</trigger>
+    </triggercontainer>
+    <actioncontainer id="t3" x="-105.00002" y="472.50006">Save Stadia Time</actioncontainer>
+    <actioncontainer id="t4" x="69.999985" y="472.5">Launch Stadia</actioncontainer>
+    <conditioncontainer id="t5" x="69.99998" y="192.50003">On Homescreen</conditioncontainer>
+    <actioncontainer id="t6" x="244.99998" y="472.50003">Select Account</actioncontainer>
+    <conditioncontainer id="t7" x="69.99999" y="52.499985">Stadia Threshold passed</conditioncontainer>
+    <connection from="t1" to="t4" type="TRUE" sourcePosition="SOUTH" targetPosition="NORTH" />
+    <connection from="t2" to="t7" type="NORMAL" sourcePosition="SOUTH" targetPosition="NORTH" />
+    <connection from="t4" to="t3" type="NORMAL" sourcePosition="WEST" targetPosition="EAST" />
+    <connection from="t4" to="t6" type="NORMAL" sourcePosition="EAST" targetPosition="WEST" />
+    <connection from="t5" to="t1" type="TRUE" sourcePosition="SOUTH" targetPosition="NORTH" />
+    <connection from="t7" to="t5" type="TRUE" sourcePosition="SOUTH" targetPosition="NORTH" />
+  </flow>
+</data>
